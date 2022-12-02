@@ -1,4 +1,5 @@
 from constants import DATA_DIR
+import ipaddress
 
 
 def log_generator():
@@ -8,36 +9,39 @@ def log_generator():
             yield log
 
 
-def user_filter(value, generator):
-    return filter(lambda x: value in x, generator)
+def user_filter(value, generate):
+    return filter(lambda x: value in x, generate)
 
 
-def user_map(num, generator):
-    return map(lambda string: string.split()[int(num)], generator)
+def user_map(num, generate):
+    return map(lambda string: string.split()[int(num)], generate)
 
 
-def user_unique(value, generator):
-    listt = []
-    for string in generator:
-        if string not in listt:
-            listt.append(string)
-            yield string
+def user_unique(value, generate):
+    seen = set()
+    for row in generate:
+        if row in seen:
+            continue
+        else:
+            seen.add(row)
+            yield row
 
 
-def user_sort(order, generator):
-    reverse = None
+def user_sort(order, generate):
+    # reverse = None
+    #
+    # if order == 'asc':
+    #     reverse = False
+    # elif order == 'desc':
+    #     reverse = True
 
-    if order == 'asc':
-        reverse = False
-    elif order == 'desc':
-        reverse = True
-
-    return iter(sorted(generator, reverse=reverse))
+    reverse = order == 'desc'
+    return iter(sorted(generate, reverse=reverse))
 
 
-def user_limit(num, generator):
+def user_limit(num, generate):
     counter = 1
-    for string in generator:
+    for string in generate:
         if counter > num:
             break
 
